@@ -1,0 +1,84 @@
+version: '3'
+
+services:
+
+    app:
+        #build: ./docker/app
+        build:
+            context: ./docker/app
+            dockerfile: Dockerfile
+        container_name: app
+        environment:
+            FRONTEND_PORT: "8000"            
+        ports:
+            - 8000:8000
+        volumes:
+            - ./app:/app
+        restart: on-failure
+        depends_on:
+            - server
+        deploy:
+            mode: replicated
+            replicas: 1
+        networks:
+            - backend
+    
+    server:
+        #build: ./docker/server
+        build:
+            context: ./docker/server
+            dockerfile: Dockerfile
+        container_name: server
+        links:
+            - mysql        
+        ports:
+            - 50051:50051
+        volumes:
+            - ./server:/server
+        restart: on-failure
+        depends_on:
+            - mysql
+        deploy:
+            mode: replicated
+            replicas: 1
+        networks:
+            - backend
+
+    mysql:
+        image: mysql:9.7.0    
+        container_name: mysql
+        ports:
+            - 3306:3306
+        #volumes:        
+        #    - db-data:/var/lib/mysql
+        environment:        
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: fastdb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: secret
+        command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        networks:
+            - backend
+    
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: dbadmin
+        ports:
+            - 8080:80
+        links:
+            - mysql
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=mysql
+            - MYSQL_USER=user
+            - MYSQL_PASSWORD=secret            
+        networks:
+            - backend    
+
+
+#volumes:
+#  db-data:  
+
+networks:
+  backend:
+    driver: bridge

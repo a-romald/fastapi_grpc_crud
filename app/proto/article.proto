@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package article;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+message Article {
+  uint64 id = 1;
+  string title = 2;
+  string content = 3;
+  google.protobuf.BoolValue published = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateArticleRequest {
+    string title = 2;
+    string content = 3;
+    bool published = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateArticleResponse {
+    Article article = 1;
+}
+
+message ReadArticleRequest {
+    uint64 id = 1;
+}
+
+message ReadArticleResponse {
+    Article article = 1;
+}
+
+message UpdateArticleRequest {
+    uint64 id = 1;
+    optional string title = 2;
+    optional string content = 3;
+    google.protobuf.BoolValue published = 4;
+}
+
+message UpdateArticleResponse {
+    Article article = 1;
+}
+
+message DeleteArticleRequest {
+    uint64 id = 1;
+}
+
+message DeleteArticleResponse {
+    bool result = 1;
+}
+
+message ListArticleResponse {
+    repeated Article articles = 1;
+}
+
+service ArticleService {
+    rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse);
+    rpc ReadArticle(ReadArticleRequest) returns (ReadArticleResponse);
+    rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse);
+    rpc DeleteArticle(DeleteArticleRequest) returns (DeleteArticleResponse);
+    rpc ListArticle(google.protobuf.Empty) returns (ListArticleResponse);
+}
