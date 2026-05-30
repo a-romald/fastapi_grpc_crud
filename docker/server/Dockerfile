@@ -23,7 +23,7 @@ EXPOSE $PORT
 #COPY ./server .
 
 # Compile the gRPC protobuf files
-# RUN python -m grpc_tools.protoc -I ./protobuf --python_out=. --grpc_python_out=. todo.proto
+# RUN python -m grpc_tools.protoc -I ./protobuf --python_out=. --grpc_python_out=. article.proto
 
 # Start the gRPC server
 CMD [ "python", "main.py" ]
